@@ -27,4 +27,6 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-data-mongodb')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	compile("me.ramswaroop.jbot:jbot:3.0.2")
+	compile("org.json:json:20180130")
 }
