@@ -52,13 +52,22 @@ public class SlackBot extends Bot {
         return this;
     }
 
-    @Controller(events = {EventType.DIRECT_MESSAGE}, pattern= "hello|hi")
+    @Controller(events = {EventType.DIRECT_MESSAGE}, pattern= "[Hh]ello|[Hh]i")
     public void onReceiveDirectMessage(WebSocketSession session, Event event) {
 
         conversationRepo.save(new Conversation(event.getUserId(), ConversationState.GREETING));
 
         reply(session, event, new Message(
-                "Oh hello there, I am " + slackService.getCurrentUser().getName()));
+                "Hello there, I am " + slackService.getCurrentUser().getName()));
+    }
+
+    @Controller(events = {EventType.DIRECT_MESSAGE})
+    public void onReceiveAnyDirectMessage(WebSocketSession session, Event event) {
+
+        conversationRepo.save(new Conversation(event.getUserId(), ConversationState.GREETING));
+
+        reply(session, event, new Message(
+                "You what?"));
     }
 
     @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE})
@@ -72,13 +81,13 @@ public class SlackBot extends Bot {
         reply(session, event, new Message("Vegan? You may want to eat at these (they sell good :apple:s and :watermelon:s):" + convertListOfPlacesToMessageString(veganPlaces)));
     }
 
-    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE, EventType.MESSAGE}, pattern = "gluten free|gluten-free")
+    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE, EventType.MESSAGE}, pattern = "gluten free")
     public void onReceiveGlutenFreeMessage(WebSocketSession session, Event event) {
         List<PlaceResponse> glutenFreePlaces = yelpService.getGlutenFreePlaces();
         reply(session, event, new Message("These places offer free gluten: " + convertListOfPlacesToMessageString(glutenFreePlaces)));
     }
 
-    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE}, pattern = "throw up|What do you think of McDonalds?")
+    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE}, pattern = "throw up")
     public void onReceiveThrowUpMessage(WebSocketSession session, Event event) {
         reply(session, event, new Message(":face_vomiting:"));
     }
