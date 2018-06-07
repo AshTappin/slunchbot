@@ -14,11 +14,13 @@ public class PlaceResponse {
     private String name;
     private String url;
     private String city;
+    private Double rating;
 
-    public PlaceResponse(final String name, final String url, final String city) {
+    public PlaceResponse(final String name, final String url, final String city, final Double rating) {
         this.name = name;
         this.url = url;
         this.city = city;
+        this.rating = rating;
     }
 
     public String getName() {
@@ -31,5 +33,9 @@ public class PlaceResponse {
 
     public String getCity() {
         return city;
+    }
+
+    public Double getRating() {
+        return rating;
     }
 }

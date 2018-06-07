@@ -52,18 +52,18 @@ public class SlackBot extends Bot {
         return this;
     }
 
-    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE}, pattern= "hello")
+    @Controller(events = {EventType.DIRECT_MESSAGE}, pattern= "hello|hi")
     public void onReceiveDirectMessage(WebSocketSession session, Event event) {
 
         conversationRepo.save(new Conversation(event.getUserId(), ConversationState.GREETING));
 
         reply(session, event, new Message(
-                "Oh hello there, I am " + slackService.getCurrentUser().getName() + ". Would you like me to suggest places for lunch?"));
+                "Oh hello there, I am " + slackService.getCurrentUser().getName()));
     }
 
     @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE})
     public void onReceiveAnyOtherMessage(WebSocketSession session, Event event) {
-        reply(session, event, new Message("I am afraid I don't understand what you are saying. I'll learn one day..."));
+       // reply(session, event, new Message("I am afraid I don't understand what you are saying. I'll learn one day..."));
     }
 
     @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE, EventType.MESSAGE}, pattern = "vegan")
@@ -78,7 +78,7 @@ public class SlackBot extends Bot {
         reply(session, event, new Message("These places offer free gluten: " + convertListOfPlacesToMessageString(glutenFreePlaces)));
     }
 
-    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE}, pattern = "throw up")
+    @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE}, pattern = "throw up|What do you think of McDonalds?")
     public void onReceiveThrowUpMessage(WebSocketSession session, Event event) {
         reply(session, event, new Message(":face_vomiting:"));
     }
@@ -89,11 +89,6 @@ public class SlackBot extends Bot {
         reply(session, event, new Message("I am an expert on :beer:! Leave work now and head over to one of these:" + convertListOfPlacesToMessageString(beerPlaces)));
     }
 
-    @Controller(events = {EventType.MESSAGE}, pattern = "^lunchbot|lunch\\n?")
-    public void onReceiveMessageLunchbot(WebSocketSession session, Event event) {
-        reply(session, event, new Message("I think someone is getting hungry...I can suggest places for lunch ?"));
-    }
-
     @Controller(events = {EventType.DIRECT_MENTION}, pattern = "Be quiet|Shut up")
     public void onReceiveMessageToSilenceLunchbot(WebSocketSession session, Event event) {
         reply(session, event, new Message("Okay, shutting up now."));
@@ -101,8 +96,22 @@ public class SlackBot extends Bot {
 
     private String convertListOfPlacesToMessageString(List<PlaceResponse> places) {
         StringBuilder stringBuilder = new StringBuilder("\n\n");
-        places.stream().limit(10).forEach(place -> stringBuilder.append(" - " + place.getName() + " (" + place.getUrl() +")" + "\n\n"));
+        places.stream().limit(10).forEach(place -> {
+            stringBuilder.append(" - " + place.getName() + " (" + place.getUrl() +")");
+            stringBuilder.append("\n "+ getStars(place.getRating().intValue()));
+            stringBuilder.append("\n\n");
+        });
         return stringBuilder.toString();
     }
 
+    private String getStars(final Integer rating) {
+
+        StringBuilder starString = new StringBuilder();
+
+        for (int numberOfStars = 0; numberOfStars <= rating; numberOfStars++) {
+            starString.append(":star:");
+
+        }
+        return starString.toString();
+    }
 }

@@ -53,7 +53,11 @@ public class YelpService {
         ArrayList<HashMap> veganBusinesses = (ArrayList) jsonObject.toMap().get("businesses");
         List<PlaceResponse> veganPlaceNames = veganBusinesses
                 .stream()
-                .map(json -> new PlaceResponse(json.get("name").toString(), json.get("url").toString(), ((HashMap)json.get("location")).get("city").toString()))
+                .map(json -> new PlaceResponse(
+                        json.get("name").toString(),
+                        json.get("url").toString(),
+                        ((HashMap)json.get("location")).get("city").toString(),
+                        Double.valueOf(json.get("rating").toString())))
                 .filter(place -> place.getCity().contains("Leamington Spa"))
                 .collect(Collectors.toList());
         return veganPlaceNames;
